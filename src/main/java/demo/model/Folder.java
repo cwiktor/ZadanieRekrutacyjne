@@ -31,7 +31,29 @@ public class Folder {
     @JoinColumn(name = "parent_folder_id")
     private Folder parentFolder;
 
+    public void addFileToFolder(File file) {
+        if (files.contains(file)) {
+            throw new IllegalArgumentException("Ten plik już należy do tego folderu.");
+        }
 
+        if (file.getFolder() != null && !file.getFolder().equals(this)) {
+            throw new IllegalArgumentException("Ten plik jest już przypisany do innego folderu.");
+        }
 
+        if (!files.contains(file)) {
+            files.add(file);
+            file.setFolder(this);
+        }
+    }
 
+    public void addParentFolder(Folder parentFolder) {
+        this.setParentFolder(parentFolder);
+    }
+
+    public void addChildFolder(Folder childFolder) {
+        if (!childrenFolders.contains(childFolder)) {
+            childrenFolders.add(childFolder);
+            childFolder.setParentFolder(this);
+        }
+    }
 }

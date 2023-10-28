@@ -2,7 +2,9 @@ package demo.controller;
 
 
 import demo.model.File;
+import demo.model.Folder;
 import demo.service.FileService;
+import demo.service.FolderService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
+    private final FolderService folderService;
 
     @GetMapping("/getAll") //only for testing :)
     public ResponseEntity<List<File>> getAllFiles(){
@@ -49,5 +52,14 @@ public class FileController {
         fileService.deleteFile(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @PutMapping("/update/{fileName}/folder/{folderName}")
+    public ResponseEntity<File> addFolderToFile(
+            @PathVariable("fileName") String fileName,
+            @PathVariable("folderName") String folderName){
+        File file = fileService.getFileByFileName(fileName);
+        Folder folder = folderService.getFolderByName(folderName);
+        file.addFolderToList(folder);
+        fileService.updateFile(file);
+        return new ResponseEntity<>(file, HttpStatus.OK);
+    }
 }

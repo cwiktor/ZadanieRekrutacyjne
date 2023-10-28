@@ -20,7 +20,6 @@ public class File {
     @Column(unique = true)
     private String fileName;
     private long size;
-
     @OneToMany
     private List<Folder> optionalFolders; // (eg. photos, text files, top secret, etc.)
 
@@ -45,5 +44,4 @@ public class File {
             throw new IllegalArgumentException("This folder is already added as optional.");
         }
     }
-
 }
