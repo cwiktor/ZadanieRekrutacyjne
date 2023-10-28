@@ -47,13 +47,45 @@ public class Folder {
     }
 
     public void addParentFolder(Folder parentFolder) {
+        if (parentFolder.equals(this)) {
+            throw new IllegalArgumentException("You cannot add yourself as a parent folder.");
+        }
+
+        if (parentFolder.isDescendantOf(this)) {
+            throw new IllegalArgumentException("FOLDER LOOP ALERT");
+        }
+
         this.setParentFolder(parentFolder);
     }
 
     public void addChildFolder(Folder childFolder) {
+        if (childFolder.equals(this)) {
+            throw new IllegalArgumentException("You cannot add yourself as a parent folder.");
+        }
+
+        if (childFolder.isAncestorOf(this)) {
+            throw new IllegalArgumentException("FOLDER LOOP ALERT");
+        }
+
         if (!childrenFolders.contains(childFolder)) {
             childrenFolders.add(childFolder);
             childFolder.setParentFolder(this);
         }
     }
+
+    private boolean isAncestorOf(Folder potentialDescendant) {
+        Folder current = potentialDescendant.getParentFolder();
+        while (current != null) {
+            if (current.equals(this)) {
+                return true;
+            }
+            current = current.getParentFolder();
+        }
+        return false;
+    }
+
+    private boolean isDescendantOf(Folder potentialAncestor) {
+        return potentialAncestor.isAncestorOf(this);
+    }
+
 }
