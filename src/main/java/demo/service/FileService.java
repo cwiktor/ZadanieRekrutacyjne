@@ -34,4 +34,30 @@ public class FileService {
     public void deleteFile(Long id) {
         fileRepository.deleteById(id);
     }
+
+    public long getTotalFileSize() {
+        List<File> allFiles = fileRepository.findAll();
+        return allFiles.stream().mapToLong(File::getSize).sum();
+    }
+
+    public long getAverageFileSize() {
+        List<File> allFiles = fileRepository.findAll();
+        return allFiles.isEmpty() ? 0 : (long) allFiles.stream().mapToLong(File::getSize).average().orElse(0);
+    }
+
+    public long getHighestFileSize() {
+        List<File> allFiles = fileRepository.findAll();
+        return allFiles.isEmpty() ? 0 : allFiles.stream().mapToLong(File::getSize).max().orElse(0);
+    }
+
+    public long getLowestFileSize() {
+        List<File> allFiles = fileRepository.findAll();
+        return allFiles.isEmpty() ? 0 : allFiles.stream().mapToLong(File::getSize).min().orElse(0);
+    }
+
+    public int getNumberOfFiles() {
+        List<File> allFiles = fileRepository.findAll();
+        return allFiles.size();
+    }
+
 }

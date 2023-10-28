@@ -33,11 +33,11 @@ public class Folder {
 
     public void addFileToFolder(File file) {
         if (files.contains(file)) {
-            throw new IllegalArgumentException("Ten plik już należy do tego folderu.");
+            throw new IllegalArgumentException("This file already belongs to this folder.");
         }
 
         if (file.getFolder() != null && !file.getFolder().equals(this)) {
-            throw new IllegalArgumentException("Ten plik jest już przypisany do innego folderu.");
+            throw new IllegalArgumentException("This file is already assigned to another folder.");
         }
 
         if (!files.contains(file)) {
