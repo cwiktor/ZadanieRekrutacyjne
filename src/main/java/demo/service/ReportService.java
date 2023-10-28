@@ -2,6 +2,7 @@ package demo.service;
 
 import demo.model.dto.FileReport;
 import demo.model.dto.FolderReport;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ public class ReportService {
     private FileService fileService;
     private FolderService folderService;
 
+    @Transactional
     public FileReport getFileStatsReport() {
         FileReport report = new FileReport();
 
@@ -24,6 +26,7 @@ public class ReportService {
         return report;
     }
 
+    @Transactional
     public FolderReport getFolderStatsReport(int topN) {
         FolderReport report = new FolderReport();
 

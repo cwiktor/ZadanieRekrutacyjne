@@ -4,10 +4,7 @@ import demo.model.File;
 import demo.model.Folder;
 import demo.service.FileService;
 import demo.service.FolderService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,68 +17,65 @@ public class FolderController {
     private FileService fileService;
 
     @GetMapping("/getAll") //only for testing :)
-    public ResponseEntity<List<Folder>> getAllFolders(){
-        List<Folder> folderList = folderService.getAllFolders();
-        return new ResponseEntity<>(folderList, HttpStatus.OK);
+    public List<Folder> getAllFolders(){
+        return folderService.getAllFolders();
     }
+
     @GetMapping("/get/folderId/{id}")
-    public ResponseEntity<Folder> getFolderByName(@PathVariable("id") long id){
-        Folder folder = folderService.getFolderById(id);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
+    public Folder getFolderByName(@PathVariable("id") long id){
+        return folderService.getFolderById(id);
     }
+
     @GetMapping("/get/folderName/{folderName}")
-    public ResponseEntity<Folder> getFileByName(@PathVariable("folderName") String folderName){
-        Folder folder= folderService.getFolderByName(folderName);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
+    public Folder getFileByName(@PathVariable("folderName") String folderName){
+        return folderService.getFolderByName(folderName);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Folder> addFolder(@RequestBody Folder folder){
-        folderService.addFolder(folder);
-        return new ResponseEntity<>(folder, HttpStatus.CREATED);
+    public Folder addFolder(@RequestBody Folder folder){
+        return folderService.addFolder(folder);
     }
+
     @PutMapping("/update")
-    public ResponseEntity<Folder> updateFolder(@RequestBody Folder folder){
-        folderService.updateFolder(folder);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
+    public Folder updateFolder(@RequestBody Folder folder){
+        return folderService.updateFolder(folder);
     }
+
     @DeleteMapping("/delete/{id}")
-    @Transactional
-    public ResponseEntity<Folder> deleteFolderById(@PathVariable("id") Long id){
+    public void deleteFolderById(@PathVariable("id") Long id){
         folderService.deleteFolder(id);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/update/{folderName}/file/{fileName}")
-    public ResponseEntity<Folder> addFileToFolder(
+    public Folder addFileToFolder(
             @PathVariable("folderName") String folderName,
             @PathVariable("fileName") String fileName){
         Folder folder = folderService.getFolderByName(folderName);
         File file = fileService.getFileByFileName(fileName);
         folder.addFileToFolder(file);
         folderService.updateFolder(folder);
-        return new ResponseEntity<>(folder, HttpStatus.OK);
+        return folder;
     }
 
     @PutMapping("/update/{parentFolderName}/childfolder/{childFolderName}")
-    public ResponseEntity<Folder> addChildFolderToFolder(
+    public Folder addChildFolderToFolder(
             @PathVariable("parentFolderName") String parentFolderName,
             @PathVariable("childFolderName") String childFolderName){
         Folder parentFolder = folderService.getFolderByName(parentFolderName);
         Folder childFolder = folderService.getFolderByName(childFolderName);
         parentFolder.addChildFolder(childFolder);
         folderService.updateFolder(parentFolder);
-        return new ResponseEntity<>(parentFolder, HttpStatus.OK);
+        return parentFolder;
     }
 
     @PutMapping("/update/{childFolderName}/parentfolder/{parentFolderName}")
-    public ResponseEntity<Folder> addParentFolderToFolder(
+    public Folder addParentFolderToFolder(
             @PathVariable("childFolderName") String childFolderName,
             @PathVariable("parentFolderName") String parentFolderName){
         Folder childFolder = folderService.getFolderByName(childFolderName);
         Folder parentFolder = folderService.getFolderByName(parentFolderName);
         childFolder.addParentFolder(parentFolder);
         folderService.updateFolder(childFolder);
-        return new ResponseEntity<>(childFolder, HttpStatus.OK);
+        return childFolder;
     }
 }

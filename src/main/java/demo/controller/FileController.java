@@ -5,10 +5,8 @@ import demo.model.File;
 import demo.model.Folder;
 import demo.service.FileService;
 import demo.service.FolderService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,44 +20,43 @@ public class FileController {
     private final FolderService folderService;
 
     @GetMapping("/getAll") //only for testing :)
-    public ResponseEntity<List<File>> getAllFiles(){
-        List<File> fileList = fileService.getAllFiles();
-        return new ResponseEntity<>(fileList, HttpStatus.OK);
+    public List<File> getAllFiles() {
+        return fileService.getAllFiles();
     }
+
     @GetMapping("/get/fileId/{id}")
-    public ResponseEntity<File> getFileById(@PathVariable("id") long id){
-        File file= fileService.getFileById(id);
-        return new ResponseEntity<>(file, HttpStatus.OK);
+    public File getFileByName(@PathVariable("id") long id) {
+        return fileService.getFileById(id);
     }
+
     @GetMapping("/get/fileName/{fileName}")
-    public ResponseEntity<File> getFileByName(@PathVariable("fileName") String fileName){
-        File file= fileService.getFileByFileName(fileName);
-        return new ResponseEntity<>(file, HttpStatus.OK);
+    public File getFileByName(@PathVariable("fileName") String fileName) {
+        return fileService.getFileByFileName(fileName);
     }
+
     @PostMapping("/add")
-    public ResponseEntity<File> addFile(@RequestBody File file){
-        fileService.addFile(file);
-        return new ResponseEntity<>(file, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public File addFile(@RequestBody File file) {
+        return fileService.addFile(file);
     }
+
     @PutMapping("/update")
-    public ResponseEntity<File> updateFile(@RequestBody File file){
-        fileService.updateFile(file);
-        return new ResponseEntity<>(file, HttpStatus.OK);
+    public File updateFile(@RequestBody File file) {
+        return fileService.updateFile(file);
     }
+
     @DeleteMapping("/delete/{id}")
-    @Transactional
-    public ResponseEntity<File> deleteFileById(@PathVariable("id") Long id){
-        fileService.deleteFile(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public Long deleteFileById(@PathVariable("id") Long id) {
+        return fileService.deleteFile(id);
     }
     @PutMapping("/update/{fileName}/folder/{folderName}")
-    public ResponseEntity<File> addFolderToFile(
+    public File addFolderToFile(
             @PathVariable("fileName") String fileName,
             @PathVariable("folderName") String folderName){
         File file = fileService.getFileByFileName(fileName);
         Folder folder = folderService.getFolderByName(folderName);
         file.addFolderToList(folder);
         fileService.updateFile(file);
-        return new ResponseEntity<>(file, HttpStatus.OK);
+        return file;
     }
 }
