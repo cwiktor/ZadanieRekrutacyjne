@@ -52,26 +52,15 @@ public class FolderService {
 
     @Transactional
     public long getTotalSizeOfFolderAndSubfolders(Folder folder) {
-        List<File> filesInFolder = folder.getFiles();
-        long totalSize = filesInFolder.stream().mapToLong(File::getSize).sum();
-
-        List<Folder> subFolders = folder.getChildrenFolders();
-        for (Folder subFolder : subFolders) {
-            totalSize += getTotalSizeOfFolderAndSubfolders(subFolder);
-        }
-        return totalSize;
+        return folder.getFiles().stream().mapToLong(File::getSize)
+                .sum() + folder.getChildrenFolders().stream()
+                .mapToLong(this::getTotalSizeOfFolderAndSubfolders).sum();
     }
 
     @Transactional
     public int getTotalFileCountInFolderAndSubfolders(Folder folder) {
-        List<File> filesInFolder = folder.getFiles();
-        int fileCount = filesInFolder.size();
-
-        List<Folder> subFolders = folder.getChildrenFolders();
-        for (Folder subFolder : subFolders) {
-            fileCount += getTotalFileCountInFolderAndSubfolders(subFolder);
-        }
-        return fileCount;
+        return folder.getFiles().size() + folder.getChildrenFolders().stream()
+                .mapToInt(this::getTotalFileCountInFolderAndSubfolders).sum();
     }
 
     @Transactional
@@ -79,29 +68,28 @@ public class FolderService {
         int totalFileCount = getTotalFileCountInFolderAndSubfolders(folder);
         long totalSize = getTotalSizeOfFolderAndSubfolders(folder);
 
-        return totalFileCount == 0 ? 0 : (double) totalSize / totalFileCount;
+        return (totalFileCount == 0) ? 0 : (double) totalSize / totalFileCount;
+    }
+
+    @Transactional
+    public List<Folder> getTopFolders(int N, Comparator<Folder> comparator) {
+        List<Folder> allFolders = folderRepository.findAll();
+        allFolders.sort(comparator);
+        return allFolders.stream().limit(N).collect(Collectors.toList());
     }
 
     @Transactional
     public List<Folder> getTopFoldersBySize(int N) {
-        List<Folder> allFolders = folderRepository.findAll();
-        allFolders.sort(Comparator.comparingLong(this::getTotalSizeOfFolderAndSubfolders).reversed());
-        return allFolders.stream().limit(N).collect(Collectors.toList());
+        return getTopFolders(N, Comparator.comparingLong(this::getTotalSizeOfFolderAndSubfolders).reversed());
     }
 
     @Transactional
     public List<Folder> getTopFoldersByFileCount(int N) {
-        List<Folder> allFolders = folderRepository.findAll();
-        allFolders.sort(Comparator.comparingInt(this::getTotalFileCountInFolderAndSubfolders).reversed());
-        return allFolders.stream().limit(N).collect(Collectors.toList());
+        return getTopFolders(N, Comparator.comparingInt(this::getTotalFileCountInFolderAndSubfolders).reversed());
     }
 
     @Transactional
     public List<Folder> getTopFoldersByAvgFileSize(int N) {
-        List<Folder> allFolders = folderRepository.findAll();
-        allFolders.sort(Comparator.comparingDouble(this::getAverageFileSizeInFolderAndSubfolders).reversed());
-        return allFolders.stream().limit(N).collect(Collectors.toList());
+        return getTopFolders(N, Comparator.comparingDouble(this::getAverageFileSizeInFolderAndSubfolders).reversed());
     }
-
-
 }

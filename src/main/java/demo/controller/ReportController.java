@@ -21,9 +21,9 @@ public class ReportController {
         return reportService.getFileStatsReport();
     }
 
-    @GetMapping("/folder-stats/{N}")
-    public FolderReport getFolderStatsReport(@PathVariable int N) {
-        return reportService.getFolderStatsReport(N);
+    @GetMapping("/folder-stats/{n}")
+    public FolderReport getFolderStatsReport(@PathVariable int n) {
+        return reportService.getFolderStatsReport(n);
     }
 
 }
